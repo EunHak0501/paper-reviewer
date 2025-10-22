@@ -5,38 +5,17 @@ from tqdm import tqdm
 from string import Template
 
 import google.generativeai as genai
-from google.ai.generativelanguage_v1beta.types import content
-from pipeline.utils import prompts, upload_to_gemini, wait_for_files_active
 
-MODEL_NAME = "gemini-1.5-flash-002"
+from pipeline.utils import prompts, upload_to_gemini, wait_for_files_active
+from configs.gemini_configs import (
+    describe_media_config,
+    describe_media_from_html_config,
+)
 
 def ask_gemini_description_from_image(pdf_file_in_gemini, media_path, media_type):
-    generation_config = {
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 40,
-        "max_output_tokens": 8192,
-        "response_schema": content.Schema(
-            type = content.Type.OBJECT,
-            required = ["caption", "description", "section"],
-            properties = {
-                "caption": content.Schema(
-                    type = content.Type.STRING,
-                ),
-                "description": content.Schema(
-                    type = content.Type.STRING,
-                ),
-                "section": content.Schema(
-                    type = content.Type.STRING,
-                ),
-            },
-        ),
-        "response_mime_type": "application/json",        
-    }
-
     model = genai.GenerativeModel(
-        model_name=MODEL_NAME,
-            generation_config=generation_config,
+        model_name=describe_media_config["model_name"],
+        generation_config=describe_media_config["generation_config"],
     )
 
     if media_type == "figure" or media_type == "chart":
@@ -96,29 +75,9 @@ async def enrich_description_from_images(media_paths, pdf_file_in_gemini, worker
 
 ## HTML
 def ask_gemini_description_from_html(pdf_file_in_gemini, figure, media_type):
-    generation_config = {
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 40,
-        "max_output_tokens": 8192,
-        "response_schema": content.Schema(
-            type = content.Type.OBJECT,
-            required = ["description", "section"],
-            properties = {
-                "description": content.Schema(
-                    type = content.Type.STRING,
-                ),
-                "section": content.Schema(
-                    type = content.Type.STRING,
-                ),
-            },
-        ),
-        "response_mime_type": "application/json",        
-    }
-
     model = genai.GenerativeModel(
-        model_name=MODEL_NAME,
-            generation_config=generation_config,
+        model_name=describe_media_from_html_config["model_name"],
+        generation_config=describe_media_from_html_config["generation_config"],
     )
 
     chat_session = model.start_chat(
