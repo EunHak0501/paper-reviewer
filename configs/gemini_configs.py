@@ -1,7 +1,74 @@
+import os
+
 from google.ai.generativelanguage_v1beta.types import content
 
+
+def _resolve_model(env_var: str, default: str) -> str:
+    """Resolve the Gemini model name, preferring environment overrides."""
+
+    model_name = os.getenv(env_var, default)
+    if model_name.startswith("models/"):
+        return model_name
+    return f"models/{model_name}"
+
+
+FLASH_MODEL = _resolve_model("GEMINI_FLASH_MODEL", "gemini-2.5-flash")
+PRO_MODEL = _resolve_model("GEMINI_PRO_MODEL", "gemini-2.5-pro")
+FLASH_LITE_MODEL = _resolve_model("GEMINI_FLASH_LITE_MODEL", "gemini-2.5-flash-lite")
+
+
+describe_media_config = {
+    "model_name": FLASH_MODEL,
+    "generation_config": {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 8192,
+        "response_schema": content.Schema(
+            type=content.Type.OBJECT,
+            required=["caption", "description", "section"],
+            properties={
+                "caption": content.Schema(
+                    type=content.Type.STRING,
+                ),
+                "description": content.Schema(
+                    type=content.Type.STRING,
+                ),
+                "section": content.Schema(
+                    type=content.Type.STRING,
+                ),
+            },
+        ),
+        "response_mime_type": "application/json",
+    },
+}
+
+
+describe_media_from_html_config = {
+    "model_name": FLASH_MODEL,
+    "generation_config": {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 8192,
+        "response_schema": content.Schema(
+            type=content.Type.OBJECT,
+            required=["description", "section"],
+            properties={
+                "description": content.Schema(
+                    type=content.Type.STRING,
+                ),
+                "section": content.Schema(
+                    type=content.Type.STRING,
+                ),
+            },
+        ),
+        "response_mime_type": "application/json",
+    },
+}
+
 reformat_table_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -21,7 +88,7 @@ reformat_table_config = {
 }
 
 double_check_config = {
-    "model_name": "gemini-2.0-pro-exp-02-05",
+    "model_name": PRO_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -41,7 +108,7 @@ double_check_config = {
 }
 
 crop_config = {
-    "model_name": "gemini-2.0-pro-exp-02-05",
+    "model_name": PRO_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -70,7 +137,7 @@ crop_config = {
 }
 
 extract_affiliation_config = {
-    "model_name": "gemini-2.0-flash-lite-preview-02-05",
+    "model_name": FLASH_LITE_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -90,7 +157,7 @@ extract_affiliation_config = {
 }
 
 extract_category_config = {
-    "model_name": "gemini-2.0-flash-lite-preview-02-05",
+    "model_name": FLASH_LITE_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -113,7 +180,7 @@ extract_category_config = {
 }
 
 extract_essentials_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -145,7 +212,7 @@ extract_essentials_config = {
 }
 
 extract_references_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -183,7 +250,7 @@ extract_references_config = {
 }
 
 extract_sections_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -212,7 +279,7 @@ extract_sections_config = {
 }
 
 extract_section_details_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -232,7 +299,7 @@ extract_section_details_config = {
 }
 
 write_script_config = {
-    "model_name": "gemini-2.0-flash",
+    "model_name": FLASH_MODEL,
     "generation_config": {
         "temperature": 1,
         "top_p": 0.95,
@@ -261,4 +328,34 @@ write_script_config = {
         ),
         "response_mime_type": "application/json",
     }
+}
+
+
+extract_tables_config = {
+    "model_name": FLASH_MODEL,
+    "generation_config": {
+        "temperature": 1,
+        "top_p": 0.95,
+        "top_k": 40,
+        "max_output_tokens": 8192,
+        "response_schema": content.Schema(
+            type=content.Type.OBJECT,
+            required=["tables"],
+            properties={
+                "tables": content.Schema(
+                    type=content.Type.ARRAY,
+                    items=content.Schema(
+                        type=content.Type.OBJECT,
+                        required=["table_html"],
+                        properties={
+                            "table_html": content.Schema(
+                                type=content.Type.STRING,
+                            ),
+                        },
+                    ),
+                ),
+            },
+        ),
+        "response_mime_type": "application/json",
+    },
 }
