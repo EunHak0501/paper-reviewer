@@ -18,6 +18,16 @@ At high level, there are two Python scripts, [`collect.py`](./collect.py) and [`
 # mendatory
 $ export GEMINI_API_KEY="..."
 
+# optional, override the default Gemini 2.5 model targets
+$ export GEMINI_FLASH_MODEL="models/gemini-2.5-flash"
+$ export GEMINI_PRO_MODEL="models/gemini-2.5-pro"
+$ export GEMINI_FLASH_LITE_MODEL="models/gemini-2.5-flash-lite"
+
+By default the project uses Gemini 2.5 Flash/Pro/Flash Lite for all vision and
+text workloads. Setting the environment variables above lets you swap in
+different model variants (for example, regionalized endpoints) without editing
+the code.
+
 # optional, only if you want to use Upstage's Document Parse
 $ export UPSTAGE_API_KEY="..." 
 
@@ -27,7 +37,8 @@ $ export R2_SECRET_ACCESS_KEY="..."
 $ export R2_S3_ENDPOINT_URL="..."
 $ export R2_DOMAIN_NAME="..."
 
-# install dependencies
+# install dependencies (Gemini integrations require google-generativeai >= 0.8.3
+# for Gemini 2.5 model support)
 $ pip install -r requirements.txt
 
 # poppler is required to convert pdf to images
