@@ -8,6 +8,7 @@ boto3==1.35.99
 arxiv
 google-generativeai>=0.8.3
 beautifulsoup4
+typing_extensions>=4.12.2
 pdf2image
 paperswithcode-client
 openreview-py
